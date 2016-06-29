@@ -84,6 +84,7 @@ def freopen(f, mode, stream):
 
 
 def daemon_start(pid_file, log_file):
+	logging.basicConfig(level=logging.INFO)
 
 	def handle_exit(signum, t):
 		if signum == signal.SIGTERM:
@@ -91,8 +92,7 @@ def daemon_start(pid_file, log_file):
 		sys.exit(1)
 
 	signal.signal(signal.SIGINT, handle_exit)
-	# signal.signal(signal.SIGTERM, handle_exit)
-	# 去掉在这里处理signal,在主函数中处理
+	signal.signal(signal.SIGTERM, handle_exit)
 
 	# fork only once because we are sure parent will exit
 	pid = os.fork()
@@ -108,14 +108,15 @@ def daemon_start(pid_file, log_file):
 	pid = os.getpid()
 	if write_pid_file(pid_file, pid) != 0:
 		os.kill(ppid, signal.SIGINT)
+		print(os.getpid())  # test
 		sys.exit(1)
 
 	os.setsid()
 	signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
 	print('started')
-	os.kill(ppid, signal.SIGTERM)
 
+	os.kill(ppid, signal.SIGTERM)
 	sys.stdin.close()
 	try:
 		freopen(log_file, 'a', sys.stdout)

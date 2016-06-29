@@ -1,4 +1,5 @@
 *.pyc
 .*
+test.sh
 pid-file
 log-file

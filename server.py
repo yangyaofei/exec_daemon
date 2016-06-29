@@ -37,9 +37,13 @@ else:
 
 logging.basicConfig(level=logging.INFO)
 s = sockets.createSocket()
-while True:
-	try:
-		conn, addr = s.accept()
-		thread.start_new_thread(dealClient, (conn, addr))
-	except:
-		conn.close()
+try:
+	while True:
+		try:
+			conn, addr = s.accept()
+			thread.start_new_thread(dealClient, (conn, addr))
+		except:
+			if conn is not None:
+				conn.close()
+except:
+	s.close()
