@@ -75,13 +75,15 @@ else:
 
 logging.basicConfig(level=logging.INFO)
 s = sockets.createSocket()
-try:
-	while True:
-		try:
-			conn, addr = s.accept()
-			thread.start_new_thread(dealClient, (conn, addr))
-		except:
-			if conn is not None:
-				conn.close()
-except:
-	s.close()
+while True:
+	try:
+		conn, addr = s.accept()
+		thread.start_new_thread(dealClient, (conn, addr))
+	except SystemExit:
+		logging.info("exit...........")
+		sys.exit(0)
+	except:
+		import traceback
+		logging.error(traceback.format_exc())
+		if conn is not None:
+			conn.close()
